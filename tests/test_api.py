@@ -19,7 +19,7 @@ def test_health_check(client):
     """
     Verifies that the API gateway is online.
     """
-    response = client.get("/")
+    response = client.get("/health")
     assert response.status_code == 200
     assert response.json()["status"] == "Online"
 
@@ -35,7 +35,7 @@ def test_predict_invalid_schema(client):
         "D_43": None,
         "D_114": 1.0
     }
-    response = client.post("/predict", json=payload)
+    response = client.post("/api/predict", json=payload)
     assert response.status_code == 422
 
 # --- Integration Tests: Business Risk Logic ---
@@ -61,7 +61,7 @@ def test_predict_risk_logic(client, income, credit_score, D_39, D_42, D_43, D_11
     
     # Measure Latency (SLA Check)
     start_time = time.perf_counter()
-    response = client.post("/predict", json=payload)
+    response = client.post("/api/predict", json=payload)
     latency = (time.perf_counter() - start_time) * 1000  # ms
     
     assert response.status_code == 200
@@ -82,6 +82,6 @@ def test_predict_empty_optional_fields(client):
         "credit_score": 700
         # Other D_ fields are optional and default to None/NaN
     }
-    response = client.post("/predict", json=payload)
+    response = client.post("/api/predict", json=payload)
     assert response.status_code == 200
     assert "status" in response.json()

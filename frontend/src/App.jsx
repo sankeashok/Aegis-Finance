@@ -66,7 +66,12 @@ function App() {
       </main>
       
       <footer className="footer">
-        <p>🛡️ Aegis-Finance Risk Gateway V1.0.0 | Production Grade Inference</p>
+        <div className="footer-credits">
+          🛡️ Aegis-Finance Risk Gateway V1.1.2 | Production Grade Inference
+        </div>
+        <div className="developer-tag">
+          Developed by <a href="https://www.linkedin.com/in/sankeashok/" target="_blank" rel="noopener noreferrer">Ashok Sanke</a>
+        </div>
       </footer>
     </div>
   )

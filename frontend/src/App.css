@@ -114,10 +114,37 @@
 
 .footer {
   text-align: center;
-  padding: 2rem;
+  padding: 3rem 2rem;
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: 0.825rem;
   border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 4rem;
+}
+
+.footer-credits {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.developer-tag {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.developer-tag a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.developer-tag a:hover {
+  filter: brightness(1.2);
+  border-bottom-color: var(--accent-primary);
 }
 
 .error-message {

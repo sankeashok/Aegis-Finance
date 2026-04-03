@@ -25,7 +25,7 @@ def test_risk_integrity_gate(client):
         "D_114": 0.0
     }
     
-    response = client.post("/predict", json=payload)
+    response = client.post("/api/predict", json=payload)
     assert response.status_code == 200
     data = response.json()
     
@@ -50,7 +50,7 @@ def test_risk_latency_gate(client):
     latencies = []
     for _ in range(5):
         start = time.perf_counter()
-        client.post("/predict", json=payload)
+        client.post("/api/predict", json=payload)
         latencies.append((time.perf_counter() - start) * 1000) # ms
         
     avg_latency = sum(latencies) / len(latencies)
@@ -62,7 +62,7 @@ def test_model_artifact_loading(client):
     """
     Confirms the server successfully context-loaded models/aegis_*.pkl artifacts.
     """
-    response = client.get("/")
+    response = client.get("/health")
     assert response.status_code == 200
-    assert response.json()["engine_version"] == "1.0.0"
+    assert response.json()["engine_version"] == "1.1.0"
     assert response.json()["status"] == "Online"
