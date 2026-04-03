@@ -3,6 +3,7 @@ import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from .schemas import LoanApplication, RiskResponse
 from .transformers import SparseSentinelTransformer
@@ -33,6 +34,19 @@ app = FastAPI(
     description="Production API for real-time credit default risk tiering.",
     version="1.0.0",
     lifespan=lifespan
+)
+
+# --- CORS Configuration ---
+# Explicitly allowing local origins to resolve browser security blocks
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # --- Prometheus Metrics Instrumentation ---
