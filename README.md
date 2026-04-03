@@ -117,7 +117,7 @@ Health check — confirms the Risk Engine is loaded and online.
 {"status": "Online", "engine_version": "1.0.0"}
 ```
 
-### `POST /predict`
+### `POST /api/predict`
 Evaluates a loan application and returns a risk tier.
 
 **Request Body:**

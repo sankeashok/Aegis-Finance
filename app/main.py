@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="🛡️ Aegis-Finance Risk Gateway",
     description="Production API for real-time credit default risk tiering.",
-    version="1.0.0",
+    version="1.1.0",
     lifespan=lifespan
 )
 
@@ -56,12 +56,13 @@ app.add_middleware(
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 
-@app.get("/", tags=["Health"])
+
+@app.get("/health", tags=["Health"])
 async def health_check():
-    return {"status": "Online", "engine_version": "1.0.0"}
+    return {"status": "Online", "engine_version": "1.1.0"}
 
 
-@app.post("/predict", response_model=RiskResponse, tags=["Inference"])
+@app.post("/api/predict", response_model=RiskResponse, tags=["Inference"])
 async def predict_risk(application: LoanApplication):
     """
     Evaluates a loan application and returns a risk-based status.
