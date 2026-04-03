@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  aegis-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: aegis-risk-gateway
+    image: aegis-finance-api:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount models directory so artifacts can be updated without rebuilding the image
+      - ./models:/aegis/models:ro
+    environment:
+      - ENV=production
+      - LOG_LEVEL=info
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    labels:
+      - "com.aegis.service=risk-gateway"
+      - "com.aegis.version=1.0.0"

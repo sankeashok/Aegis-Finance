@@ -12,10 +12,22 @@ __pycache__/
 # Temporary / Council data
 _temp/
 
-# Datasets (Do not commit PII or raw raw data)
+# Datasets (Do not commit PII or raw data)
 data/
 *.parquet
 *.csv
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Test coverage
+.coverage
+.pytest_cache/
+
+# Scratch / audit scripts (not part of production)
+leakage_audit.py
+verify_api_logic.py
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,28 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.venv/
+*.egg-info/
+
+# ── Data & Notebooks (large, not needed in image) ─────────────────────────────
+data/
+notebooks/
+_temp/
+
+# ── Dev & Git ─────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+*.md
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Scratch files ─────────────────────────────────────────────────────────────
+leakage_audit.py
+recalibrate_data.py
+verify_api_logic.py
+02_Feature_Engineering.py
+03_*.py

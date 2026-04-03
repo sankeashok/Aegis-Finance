@@ -9,30 +9,7 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, roc_curve, auc, recall_score
 from xgboost import XGBClassifier
-from sklearn.base import BaseEstimator, TransformerMixin
-
-# Transformer definition must be present for joblib to load the preprocessor correctly
-class SparseSentinelTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self, sentinel_value=-999):
-        self.sentinel_value = sentinel_value
-        self.feature_names_in_ = None
-        
-    def fit(self, X, y=None):
-        if isinstance(X, pd.DataFrame):
-            self.feature_names_in_ = X.columns.tolist()
-        return self
-        
-    def transform(self, X, y=None):
-        X_df = pd.DataFrame(X, columns=self.feature_names_in_).copy()
-        cols = X_df.columns
-        new_features = []
-        for col in cols:
-            mask = X_df[col].isna().astype(int)
-            mask.name = f"{col}_is_missing"
-            X_df[col] = X_df[col].fillna(self.sentinel_value)
-            new_features.append(X_df[col])
-            new_features.append(mask)
-        return pd.concat(new_features, axis=1).values
+from app.transformers import SparseSentinelTransformer
 
 def main():
     print("--- Mission: Phase 3 \u2013 Risk Engine Training ---\n")
@@ -58,13 +35,19 @@ def main():
     X_train, X_val, y_train, y_val = train_test_split(X_processed, y, test_size=0.2, random_state=42, stratify=y)
 
     # 4. Train Risk Engine (XGBoost)
-    # Target: Maximize Recall, scale_pos_weight=11.6
-    print("\nTraining XGBoost Risk Engine (scale_pos_weight=11.6)...")
+    # Auto-compute scale_pos_weight from actual class imbalance
+    neg_count = int((y_train == 0).sum())
+    pos_count = int((y_train == 1).sum())
+    scale_pos_weight = neg_count / max(pos_count, 1)
+    print(f"  Class imbalance ratio: {scale_pos_weight:.1f}x (neg={neg_count:,}, pos={pos_count:,})")
+    print(f"  Training XGBoost Risk Engine (scale_pos_weight={scale_pos_weight:.1f})...")
     risk_engine = XGBClassifier(
-        n_estimators=100,
-        learning_rate=0.1,
-        max_depth=5,
-        scale_pos_weight=11.6, 
+        n_estimators=200,
+        learning_rate=0.05,
+        max_depth=4,
+        scale_pos_weight=scale_pos_weight,
+        subsample=0.8,
+        colsample_bytree=0.8,
         random_state=42,
         eval_metric='logloss'
     )

@@ -6,3 +6,9 @@ seaborn==0.13.2
 lightgbm==4.6.0
 xgboost==2.1.4
 jupyterlab==4.3.5
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pytest==8.3.4
+httpx==0.28.1
+pytest-cov==6.0.0
+prometheus-fastapi-instrumentator==7.0.0
