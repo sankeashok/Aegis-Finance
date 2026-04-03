@@ -8,27 +8,25 @@
 ![XGBoost](https://img.shields.io/badge/XGBoost-2.1.4-orange)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Version](https://img.shields.io/badge/Version-1.0.0-brightgreen)
+![Version](https://img.shields.io/badge/Version-1.1.0-brightgreen)
 
-**A Production-Grade AI/ML Credit Default Risk Engine**
+**🛡️ Aegis-Finance: Premium Risk Gateway**
 
-*Real-time loan risk tiering powered by XGBoost, served via a containerized FastAPI gateway with full CI/CD automation.*
+*Real-time loan risk tiering powered by XGBoost, served via a unified Vite-React + FastAPI production container.*
 
-</div>
+🔗 **[Live Production URL](https://aegis-finance-gateway-446421530034.asia-south1.run.app)**
 
 ---
 
 ## 📋 Overview
 
-**Aegis-Finance** is an end-to-end MLOps system that evaluates loan applications in real-time and assigns a risk tier (`Safe` / `High Risk`) based on an XGBoost classifier trained on financial delinquency indicators.
+**Aegis-Finance** is a production-grade MLOps ecosystem. It features a high-performance XGBoost inference engine and a **Premium React Frontend ("Obsidian Emerald")** designed for real-time risk assessment and loan tiering.
 
-The system is engineered for **financial-grade production standards**:
-- ✅ Sub-200ms inference SLA (actual: ~12ms per request)
-- ✅ Leakage-free probabilistic training data
-- ✅ Automated Quality Gates (pytest, 8/8 pass)
-- ✅ Prometheus monitoring on `/metrics`
-- ✅ Multi-stage Docker image with non-root user
-- ✅ Full CI/CD: GitHub Actions → GHCR
+The system is engineered for **financial-grade standards**:
+- 🎨 **Premium UI**: Dual-theme (Dark/Light) React dashboard with animated risk gauges.
+- ⚡ **Unified Gateway**: Single-container architecture serving both UI and API.
+- ✅ **Sub-200ms inference**: Scalable XGBoost inference via FastAPI.
+- ✅ **Automated CI/CD**: Seamless GitHub Actions → Cloud Run pipeline.
 
 ---
 
