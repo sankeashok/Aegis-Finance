@@ -2,6 +2,8 @@ import os
 import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -94,3 +96,14 @@ async def predict_risk(application: LoanApplication):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Inference Failure: {str(e)}")
+
+
+# --- Unified Static UI Hosting ---
+# Mount the compiled React frontend (must exist in frontend/dist at runtime)
+if os.path.exists("frontend/dist"):
+    app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static")
+
+    # Catch-all for React Router navigation (returns index.html for all unnamed routes)
+    @app.get("/{full_path:path}", tags=["UI"])
+    async def serve_react_app(full_path: str):
+        return FileResponse("frontend/dist/index.html")

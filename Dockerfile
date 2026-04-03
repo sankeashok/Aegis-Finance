@@ -1,18 +1,30 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Project Aegis-Finance: Production Dockerfile
-# Stage 1: Builder — installs only runtime dependencies
-# Stage 2: Runtime — minimal image, non-root user, no dev tools
+# Project Aegis-Finance: Unified Production Dockerfile
+# Stage 1: Frontend Builder — Compiles React UI
+# Stage 2: Backend Builder — Installs Python dependencies
+# Stage 3: Unified Runtime — Minimal image, serving both UI and API
 # ─────────────────────────────────────────────────────────────────────────────
 
-# ── Stage 1: Dependency Builder ───────────────────────────────────────────────
-FROM python:3.11-slim AS builder
+# ── Stage 1: Frontend Builder ────────────────────────────────────────────────
+FROM node:20-slim AS frontend-builder
+
+WORKDIR /frontend
+
+# Install dependencies (leverage Docker cache)
+COPY frontend/package*.json ./
+RUN npm install
+
+# Copy source and build (ensure vite.config.js and public/ are included)
+COPY frontend/ .
+RUN npm run build
+
+# ── Stage 2: Backend Builder ─────────────────────────────────────────────────
+FROM python:3.11-slim AS python-builder
 
 WORKDIR /build
 
-# Copy and install runtime deps only (no pip cache to reduce image size)
 COPY requirements.txt .
 
-# Strip dev/notebook packages for leaner image
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir \
         fastapi==0.115.6 \
@@ -25,36 +37,39 @@ RUN pip install --no-cache-dir --upgrade pip \
         httpx==0.28.1 \
         prometheus-fastapi-instrumentator==7.0.0
 
-# ── Stage 2: Production Runtime ───────────────────────────────────────────────
+# ── Stage 3: Unified Production Runtime ──────────────────────────────────────
 FROM python:3.11-slim AS runtime
 
 LABEL maintainer="Project-Aegis-Finance"
-LABEL version="1.0.0"
-LABEL description="Aegis Risk Gateway – Production API"
+LABEL version="1.1.0"
+LABEL description="Aegis Risk Gateway – Unified UI & API"
 
 # Security: Run as a non-root user
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
 WORKDIR /aegis
 
-# Copy installed packages from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
+# Copy Python packages from builder
+COPY --from=python-builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=python-builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
 
-# Copy application source only (not .venv, data, notebooks, _temp)
+# Copy Frontend dist from builder
+COPY --from=frontend-builder /frontend/dist ./frontend/dist
+
+# Copy application source and models
 COPY app/ ./app/
 COPY models/ ./models/
 
-# Set ownership
+# Set ownership for security
 RUN chown -R appuser:appgroup /aegis
 
 USER appuser
 
 EXPOSE 8000
 
-# Health check: ping the root endpoint every 30s
+# Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/')" || exit 1
 
-# Start the Risk Gateway
+# Start the Gateway (unified UI + API)
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
