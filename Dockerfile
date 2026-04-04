@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # ── Stage 3: Unified Production Runtime ──────────────────────────────────────
 FROM python:3.11-slim AS runtime
 LABEL maintainer="Project-Aegis-Finance"
-LABEL version="1.3.0"
+LABEL version="1.3.1"
 
 # Install runtime dependencies (e.g., libgomp1 for XGBoost)
 RUN apt-get update && apt-get install -y --no-install-recommends \
