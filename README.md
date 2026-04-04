@@ -8,7 +8,7 @@
 ![XGBoost](https://img.shields.io/badge/XGBoost-2.1.4-orange)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Version](https://img.shields.io/badge/Version-1.3.8-brightgreen)
+![Version](https://img.shields.io/badge/Version-1.3.9-brightgreen)
 
 **🛡️ Aegis-Finance: Premium Risk Gateway**
 
@@ -88,7 +88,7 @@ docker-compose up -d
 
 # Verify it's running
 curl http://localhost:8000/
-# → {"status":"Online","engine_version":"1.0.0"}
+# → {"status":"Online","engine_version":"1.3.9"}
 ```
 
 ### Option B: Local Python
@@ -114,7 +114,7 @@ Health check — confirms the Risk Engine is loaded and online.
 
 **Response:**
 ```json
-{"status": "Online", "engine_version": "1.0.0"}
+{"status": "Online", "engine_version": "1.3.9"}
 ```
 
 ### `POST /api/predict`
@@ -228,6 +228,18 @@ Push to main
 🚀 Automated Deployment        ~3 min
     • Deploy to Google Cloud Run
     • Native OIDC Authentication
+
+---
+
+## 🧪 Experiment Tracking (DagsHub + MLflow)
+
+Aegis-Finance utilizes **DagsHub** and **MLflow** for robust experiment tracking, artifact versioning, and drift monitoring. This ensures full lineage from training data to production inference.
+
+- **Tracking URI**: `https://dagshub.com/sankeashok/Aegis-Finance.mlflow`
+- **Experiment Board**: [View Latest Runs](https://dagshub.com/sankeashok/Aegis-Finance.mlflow/#/experiments/0)
+- **Primary Baseline**: `Baseline_Honest_Recall_V1`
+    - **Recall (Leakage-Free)**: `0.631`
+    - **Hyperparams**: `scale_pos_weight=11.6`, `learning_rate=0.05`, `max_depth=6`
 ```
 
 ---
@@ -253,7 +265,9 @@ Aegis-Finance/
 ├── docker-compose.yml       # Local orchestration
 ├── recalibrate_data.py      # Probabilistic data generator (leakage-free)
 ├── 02_Feature_Engineering.py
-└── 03_Risk_Engine_Training.py
+├── 03_Risk_Engine_Training.py
+└── scripts/
+    └── mlflow_baseline.py   # Remote DagsHub experiment tracking
 ```
 
 ---
@@ -272,6 +286,7 @@ Aegis-Finance/
 | **Container** | Docker (multi-stage, python:3.11-slim) |
 | **Orchestration** | Docker Compose |
 | **CI/CD** | GitHub Actions → GAR → Cloud Run |
+| **Tracking** | MLflow → DagsHub |
 | **Language** | Python 3.11 |
 
 ---

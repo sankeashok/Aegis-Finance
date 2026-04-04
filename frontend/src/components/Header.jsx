@@ -12,7 +12,7 @@ const Header = ({ theme, onToggleTheme }) => {
         <div className="header-actions">
           <div className="status-badge">
             <span className="status-dot"></span>
-            LIVE • v1.3.8 AUTOMATED
+            LIVE • v1.3.9 AUTOMATED
           </div>
 
           <button className="theme-toggle" onClick={onToggleTheme} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>

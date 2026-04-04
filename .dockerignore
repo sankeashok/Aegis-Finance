@@ -6,6 +6,12 @@ __pycache__/
 .venv/
 *.egg-info/
 
+# ── Node / Frontend ───────────────────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.eslintcache
+
 # ── Data & Notebooks (large, not needed in image) ─────────────────────────────
 data/
 notebooks/

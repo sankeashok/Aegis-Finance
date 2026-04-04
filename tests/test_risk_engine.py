@@ -64,5 +64,5 @@ def test_model_artifact_loading(client):
     """
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json()["engine_version"] == "1.3.8"
+    assert response.json()["engine_version"] == "1.3.9"
     assert response.json()["status"] == "Online"
