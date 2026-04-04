@@ -1,26 +1,9 @@
 import React, { useState } from 'react';
 
-const RiskForm = ({ onSubmit, loading }) => {
-  const [formData, setFormData] = useState({
-    income: 85000,
-    credit_score: 720,
-    D_39: 1.0,
-    D_42: null,
-    D_43: null,
-    D_114: 1.0
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value === '' ? null : parseFloat(value)
-    }));
-  };
-
+const RiskForm = ({ formData, onChange, onSubmit, loading }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit();
   };
 
   return (
@@ -38,7 +21,7 @@ const RiskForm = ({ onSubmit, loading }) => {
               type="number" 
               name="income" 
               value={formData.income || ''} 
-              onChange={handleChange}
+              onChange={onChange}
               placeholder="e.g. 75000"
               required 
             />
@@ -50,7 +33,7 @@ const RiskForm = ({ onSubmit, loading }) => {
               type="number" 
               name="credit_score" 
               value={formData.credit_score || ''} 
-              onChange={handleChange}
+              onChange={onChange}
               placeholder="300-850"
               min="300"
               max="850"
@@ -67,13 +50,13 @@ const RiskForm = ({ onSubmit, loading }) => {
               step="0.01"
               name="D_39" 
               value={formData.D_39 ?? ''} 
-              onChange={handleChange}
+              onChange={onChange}
             />
           </div>
 
           <div className="form-group">
             <label>D_114 (Categorical)</label>
-            <select name="D_114" value={formData.D_114 ?? ''} onChange={handleChange}>
+            <select name="D_114" value={formData.D_114 ?? ''} onChange={onChange}>
               <option value="1.0">Active/Recent</option>
               <option value="0.0">No Recent</option>
               <option value="">Unknown</option>
@@ -87,7 +70,7 @@ const RiskForm = ({ onSubmit, loading }) => {
               step="0.01"
               name="D_42" 
               value={formData.D_42 ?? ''} 
-              onChange={handleChange}
+              onChange={onChange}
               placeholder="Optional"
             />
           </div>
@@ -99,15 +82,18 @@ const RiskForm = ({ onSubmit, loading }) => {
               step="0.01"
               name="D_43" 
               value={formData.D_43 ?? ''} 
-              onChange={handleChange}
+              onChange={onChange}
               placeholder="Optional"
             />
           </div>
         </div>
 
-        <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? 'CALCULATING RISK...' : '🛡️ RUN RISK ASSESSMENT'}
-        </button>
+        {/* Action Button hidden on mobile but visible in desktop flow if needed */}
+        <div className="desktop-only-action">
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? 'CALCULATING RISK...' : '🛡️ RUN RISK ASSESSMENT'}
+          </button>
+        </div>
       </form>
 
       <style>{`
