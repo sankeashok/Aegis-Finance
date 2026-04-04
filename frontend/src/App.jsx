@@ -109,7 +109,7 @@ function App() {
           🛡️ Aegis-Finance Risk Gateway V1.1.2 | Production Grade Inference
         </div>
         <div className="developer-tag">
-          Developed by <a href="https://www.linkedin.com/in/sankeashok/" target="_blank" rel="noopener noreferrer">Ashok Sanke</a>
+          Developed by <a href="https://www.linkedin.com/in/ashok-sanke/" target="_blank" rel="noopener noreferrer">Ashok Sanke</a>
         </div>
       </footer>
     </div>
