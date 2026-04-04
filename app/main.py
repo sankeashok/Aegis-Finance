@@ -56,7 +56,7 @@ Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 @app.get("/health", tags=["Health"])
 async def health_check():
-    return {"status": "Online", "engine_version": "1.2.0"}
+    return {"status": "Online", "engine_version": "1.3.0"}
 
 def calculate_risk_drivers(data: dict) -> list:
     """
