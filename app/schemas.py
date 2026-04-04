@@ -1,5 +1,14 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
+
+class RiskDriver(BaseModel):
+    """
+    Represents a specific feature's contribution to the risk score.
+    """
+    feature: str
+    impact: str = Field(..., description="'Positive' (reduces risk) or 'Negative' (increases risk)")
+    score: float = Field(..., description="Normalized contribution score (-1.0 to 1.0)")
+    description: str
 
 class LoanApplication(BaseModel):
     """
@@ -32,3 +41,4 @@ class RiskResponse(BaseModel):
     status: str
     probability: float
     action: str
+    drivers: Optional[List[RiskDriver]] = []

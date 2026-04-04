@@ -38,6 +38,26 @@ const ResultCard = ({ prediction, loading }) => {
           <span className="info-label">Recommended Action</span>
           <span className="info-value action-value">{prediction.action}</span>
         </div>
+
+        {/* Risk Drivers (Phase 2) */}
+        {prediction.drivers && prediction.drivers.length > 0 && (
+          <div className="drivers-section">
+            <span className="info-label">Key Risk Drivers</span>
+            <div className="drivers-list">
+              {prediction.drivers.map((driver, idx) => (
+                <div key={idx} className={`driver-item ${driver.impact.toLowerCase()}`}>
+                  <div className="driver-header">
+                    <span className="driver-feature">{driver.feature}</span>
+                    <span className={`driver-badge ${driver.impact.toLowerCase()}`}>
+                      {driver.impact === 'Positive' ? '✓ Safe' : '⚠ Risk'}
+                    </span>
+                  </div>
+                  <p className="driver-desc">{driver.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="result-footer">
@@ -128,6 +148,60 @@ const ResultCard = ({ prediction, loading }) => {
         .action-value {
           color: var(--accent-primary);
         }
+
+        .drivers-section {
+          margin-top: 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+        .drivers-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+        .driver-item {
+          padding: 0.825rem;
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: 8px;
+          border-left: 3px solid var(--border-subtle);
+          transition: all 0.2s ease;
+        }
+        .driver-item:hover {
+          background: rgba(255, 255, 255, 0.04);
+          transform: translateX(4px);
+        }
+        .driver-item.positive { border-left-color: var(--success); }
+        .driver-item.negative { border-left-color: var(--danger); }
+        
+        .driver-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.25rem;
+        }
+        .driver-feature {
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: var(--text-primary);
+        }
+        .driver-badge {
+          font-size: 0.65rem;
+          font-weight: 800;
+          padding: 0.1rem 0.5rem;
+          border-radius: 4px;
+          text-transform: uppercase;
+        }
+        .driver-badge.positive { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .driver-badge.negative { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        
+        .driver-desc {
+          font-size: 0.75rem;
+          color: var(--text-muted);
+          margin: 0;
+          line-height: 1.4;
+        }
+
         .result-footer {
           margin-top: auto;
           width: 100%;

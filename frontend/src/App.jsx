@@ -16,8 +16,10 @@ function App() {
     D_114: 1.0
   })
   const [prediction, setPrediction] = useState(null)
+  const [history, setHistory] = useState(JSON.parse(localStorage.getItem('aegis_history') || '[]'))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [showHistory, setShowHistory] = useState(false)
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -55,6 +57,14 @@ function App() {
       
       const data = await response.json()
       setPrediction(data)
+      
+      // Save to history
+      const newHistory = [
+        { ...data, date: new Date().toISOString(), input: { ...formData } },
+        ...history
+      ].slice(0, 5) // Keep last 5
+      setHistory(newHistory)
+      localStorage.setItem('aegis_history', JSON.stringify(newHistory))
     } catch (err) {
       setError(err.message)
       setPrediction(null)
@@ -106,12 +116,40 @@ function App() {
       
       <footer className="footer">
         <div className="footer-credits">
-          🛡️ Aegis-Finance Risk Gateway V1.1.2 | Production Grade Inference
+          🛡️ Aegis-Finance Risk Gateway V1.2.0 | Advanced Risk Intelligence
         </div>
         <div className="developer-tag">
           Developed by <a href="https://www.linkedin.com/in/ashok-sanke/" target="_blank" rel="noopener noreferrer">Ashok Sanke</a>
         </div>
       </footer>
+
+      {/* History Sidebar/Section (Phase 2) */}
+      <button 
+        className="history-toggle-btn"
+        onClick={() => setShowHistory(!showHistory)}
+      >
+        {showHistory ? '✕' : '🕒'}
+      </button>
+
+      {showHistory && (
+        <div className="history-overlay glass-card">
+          <h3>Recent Assessments</h3>
+          {history.length === 0 ? <p>No history yet.</p> : (
+            <div className="history-list">
+              {history.map((item, idx) => (
+                <div key={idx} className="history-item" onClick={() => { setPrediction(item); setFormData(item.input); setShowHistory(false); }}>
+                  <div className={`history-status-dot ${item.status.toLowerCase().replace(' ', '-')}`}></div>
+                  <div className="history-item-info">
+                    <span className="history-item-status">{item.status}</span>
+                    <span className="history-item-date">{new Date(item.date).toLocaleTimeString()}</span>
+                  </div>
+                  <span className="history-item-prob">{(item.probability * 100).toFixed(0)}%</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

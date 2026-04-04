@@ -2,8 +2,7 @@ import React from 'react';
 
 const AegisGauge = ({ probability }) => {
   const percentage = Math.round(probability * 100);
-  const strokeDasharray = 283; // Circumference of 2*PI*45
-  const strokeDashoffset = strokeDasharray - (strokeDasharray * (percentage / 100));
+  const confidence = Math.round(Math.abs(probability - 0.5) * 2 * 100);
   
   // Color based on risk
   let strokeColor = 'var(--success)';
@@ -44,6 +43,20 @@ const AegisGauge = ({ probability }) => {
       <div className="gauge-footer">
         <div className={`risk-indicator ${percentage > 50 ? 'risk-high' : 'risk-safe'}`}>
           {percentage > 50 ? '🛡️ HIGH RISK' : '✅ SAFE BASKET'}
+        </div>
+        
+        {/* Confidence Indicator (Phase 2) */}
+        <div className="confidence-section">
+          <div className="confidence-header">
+            <span>Engine Confidence</span>
+            <span>{confidence}%</span>
+          </div>
+          <div className="confidence-track">
+            <div 
+              className="confidence-fill" 
+              style={{ width: `${confidence}%` }}
+            ></div>
+          </div>
         </div>
       </div>
 
@@ -108,6 +121,33 @@ const AegisGauge = ({ probability }) => {
           background: rgba(16, 185, 129, 0.1);
           color: var(--success);
           border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .confidence-section {
+          margin-top: 1.5rem;
+          width: 100%;
+        }
+        .confidence-header {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.7rem;
+          font-weight: 700;
+          color: var(--text-muted);
+          margin-bottom: 0.5rem;
+          text-transform: uppercase;
+        }
+        .confidence-track {
+          width: 100%;
+          height: 4px;
+          background: var(--bg-tertiary);
+          border-radius: 100px;
+          overflow: hidden;
+        }
+        .confidence-fill {
+          height: 100%;
+          background: var(--accent-primary);
+          transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 0 10px var(--accent-primary);
         }
       `}</style>
     </div>
