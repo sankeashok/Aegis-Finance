@@ -8,13 +8,13 @@
 ![XGBoost](https://img.shields.io/badge/XGBoost-2.1.4-orange)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Version](https://img.shields.io/badge/Version-1.1.0-brightgreen)
+![Version](https://img.shields.io/badge/Version-1.3.8-brightgreen)
 
 **🛡️ Aegis-Finance: Premium Risk Gateway**
 
 *Real-time loan risk tiering powered by XGBoost, served via a unified Vite-React + FastAPI production container.*
 
-🔗 **[Live Production URL](https://aegis-finance-gateway-446421530034.asia-south1.run.app)**
+🔗 **[Live Production Dashboard](https://aegis-finance-api-yryvmgxkoq-uc.a.run.app)**
 
 ---
 
@@ -26,7 +26,7 @@ The system is engineered for **financial-grade standards**:
 - 🎨 **Premium UI**: Dual-theme (Dark/Light) React dashboard with animated risk gauges.
 - ⚡ **Unified Gateway**: Single-container architecture serving both UI and API.
 - ✅ **Sub-200ms inference**: Scalable XGBoost inference via FastAPI.
-- ✅ **Automated CI/CD**: Seamless GitHub Actions → Cloud Run pipeline.
+- ✅ **Automated CI/CD**: 3-stage GitHub Actions → GAR → Cloud Run pipeline.
 
 ---
 
@@ -201,7 +201,7 @@ docker-compose down
 - Base: `python:3.11-slim` (multi-stage build)
 - Runtime user: `appuser` (non-root, security best practice)
 - Health check: pings `/` every 30s
-- Published to: `ghcr.io/sankeashok/aegis-finance-api`
+- Published to: `us-central1-docker.pkg.dev` (Google Artifact Registry)
 
 ---
 
@@ -222,7 +222,12 @@ Push to main
 🐳 Build & Push Docker Image   ~5 min
     • Multi-stage docker build
     • Tag: latest + sha-<commit>
-    • Push to GHCR
+    • Push to Google Artifact Registry (GAR)
+    │
+    ▼
+🚀 Automated Deployment        ~3 min
+    • Deploy to Google Cloud Run
+    • Native OIDC Authentication
 ```
 
 ---
@@ -243,7 +248,7 @@ Aegis-Finance/
 │   ├── test_api.py          # Schema validation + integration tests
 │   └── test_risk_engine.py  # Integrity gate + latency SLA tests
 ├── .github/workflows/
-│   └── ci-cd.yml            # GitHub Actions: pytest → Docker → GHCR
+│   └── ci-cd.yml            # GitHub Actions: pytest → Docker → GAR → Cloud Run
 ├── Dockerfile               # Multi-stage production image
 ├── docker-compose.yml       # Local orchestration
 ├── recalibrate_data.py      # Probabilistic data generator (leakage-free)
@@ -266,7 +271,7 @@ Aegis-Finance/
 | **Batch Inference** | httpx AsyncClient |
 | **Container** | Docker (multi-stage, python:3.11-slim) |
 | **Orchestration** | Docker Compose |
-| **CI/CD** | GitHub Actions → GHCR |
+| **CI/CD** | GitHub Actions → GAR → Cloud Run |
 | **Language** | Python 3.11 |
 
 ---
