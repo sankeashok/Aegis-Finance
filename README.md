@@ -18,6 +18,30 @@
 
 ---
 
+## 🎬 Visual Showreel
+
+<div align="center">
+  <p><b>Animated Dashboard Demo (Vite-React + FastAPI)</b></p>
+  <img src="docs/assets/dashboard_demo.webp" width="800px" alt="Dashboard Demo">
+</div>
+
+<br/>
+
+<div align="center">
+  <table border="0">
+    <tr>
+      <td align="center"><b>Experiment Tracking (DagsHub)</b></td>
+      <td align="center"><b>Production Metrics (Prometheus)</b></td>
+    </tr>
+    <tr>
+      <td><img src="docs/assets/dagshub_experiments.png" width="400px" alt="DagsHub Tracking"></td>
+      <td><img src="docs/assets/prometheus_metrics.png" width="400px" alt="Prometheus Metrics"></td>
+    </tr>
+  </table>
+</div>
+
+---
+
 ## 📋 Overview
 
 **Aegis-Finance** is a production-grade MLOps ecosystem. It features a high-performance XGBoost inference engine and a **Premium React Frontend ("Obsidian Emerald")** designed for real-time risk assessment and loan tiering.
@@ -60,18 +84,27 @@ Client POST /predict (LoanApplication JSON)
 
 ---
 
-## 📊 Model Performance
+## 📊 Model Performance & Integrity
 
+### ⚖️ The Versioning Story
+To demonstrate professional model governance, Aegis-Finance maintains a clear lineage between early research and production stability:
+
+| Version | Status | Recall | Note |
+|---|---|---|---|
+| **v0.1** | 🛑 Retired | 99.9% | **Leaked**: Deterministic injected extremes identified during audit. |
+| **v1.0 (Current)** | ✅ Production | **63.1%** | **Honest Baseline**: Leakage-free probabilistic log-odds generator. |
+
+### 📈 Current Engine Benchmarks (v1.3.9)
 | Metric | Value |
 |---|---|
 | **Model** | XGBoost Gradient Boosting |
-| **Recall** | 63.1% *(honest, leakage-free)* |
-| **Inference Latency** | ~12ms per request |
+| **Recall** | **63.1%** |
+| **Inference Latency** | **~12ms** per request |
 | **Throughput (batch)** | ~53 req/sec |
 | **Training Default Rate** | ~3.9% (realistic imbalance) |
 | **Scale Pos Weight** | Auto-computed from class ratio |
 
-> **Leakage Audit Note:** An earlier prototype achieved 99.9% Recall due to a structural data leak (deterministic injected extremes). The V1.0 model uses a probabilistic log-odds data generator — producing an honest 63.1% Recall aligned with real-world financial risk models.
+> **Integrity Guarantee:** The V1.0 model was recalibrated to prioritize **System Integrity** over "vanity metrics." By auditing the structural data leak in the v0.1 prototype, we established a reliability-first baseline suitable for financial risk scoring.
 
 ---
 
