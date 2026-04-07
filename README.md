@@ -264,16 +264,21 @@ Push to main
 
 ---
 
-## 🧪 Experiment Tracking (DagsHub + MLflow)
+## 🧪 Experiment Tracking & Drift Monitoring (DagsHub + MLflow)
 
-Aegis-Finance utilizes **DagsHub** and **MLflow** for robust experiment tracking, artifact versioning, and drift monitoring. This ensures full lineage from training data to production inference.
+Aegis-Finance utilizes **DagsHub** and **MLflow** for robust experiment tracking and **proactive drift detection**. This ensures full lineage from training research to production observability.
 
-- **Tracking URI**: `https://dagshub.com/sankeashok/Aegis-Finance.mlflow`
-- **Experiment Board**: [View Latest Runs](https://dagshub.com/sankeashok/Aegis-Finance.mlflow/#/experiments/0)
-- **Primary Baseline**: `Baseline_Honest_Recall_V1`
-    - **Recall (Leakage-Free)**: `0.631`
-    - **Hyperparams**: `scale_pos_weight=11.6`, `learning_rate=0.05`, `max_depth=6`
-```
+### 🕵️‍♂️ Automated Drift Detection (Evidently AI)
+To prevent model decay, Aegis-Finance implements automated Data and Target drift audits using **Evidently AI**. This monitors shifts in input distributions (e.g., changing delinquency patterns) vs. the training baseline.
+
+- **Reports**: Interactive HTML dashboards showing P-values and drift scores.
+- **Lineage**: Drift reports are automatically logged to **MLflow** as artifacts.
+- **Experiment Board**: [View Latest Monitoring Runs](https://dagshub.com/sankeashok/Aegis-Finance.mlflow/#/experiments/0)
+
+### 📈 Primary Baseline (v1.3.9)
+- **Run Name**: `Baseline_Honest_Recall_V1`
+- **Recall (Honest)**: `0.631`
+- **Hyperparams**: `scale_pos_weight=11.6`, `learning_rate=0.05`, `max_depth=6`
 
 ---
 
