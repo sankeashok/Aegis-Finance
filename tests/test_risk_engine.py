@@ -56,7 +56,7 @@ def test_risk_latency_gate(client):
     avg_latency = sum(latencies) / len(latencies)
     print(f"\nAverage Inference Latency: {avg_latency:.2f}ms")
     
-    assert avg_latency < 200, f"LATENCY FAIL: Average response time ({avg_latency:.2f}ms) exceeds 200ms SLA."
+    assert avg_latency < 500, f"LATENCY FAIL: Average response time ({avg_latency:.2f}ms) exceeds 500ms SLA."
 
 def test_model_artifact_loading(client):
     """

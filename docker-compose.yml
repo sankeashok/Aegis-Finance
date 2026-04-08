@@ -1,28 +1,96 @@
-version: "3.9"
+version: "3.8"
+
+# =============================================================
+#  Aegis-Finance — Complete Local MLOps Stack
+#  
+#  Services:
+#    1. aegis-api      → FastAPI ML app (your existing service)
+#    2. prometheus     → scrapes /metrics every 15s
+#    3. grafana        → dashboards reading from Prometheus
+#
+#  Access:
+#    API:        http://localhost:8000
+#    API Docs:   http://localhost:8000/docs
+#    Drift:      http://localhost:8000/drift
+#    Prometheus: http://localhost:9090
+#    Grafana:    http://localhost:3000  (admin / aegis123)
+#
+#  Usage:
+#    docker-compose up -d          # start all services
+#    docker-compose logs -f api    # follow API logs
+#    docker-compose down           # stop all services
+# =============================================================
 
 services:
+
+  # ── 1. Aegis-Finance API ───────────────────────────────────
   aegis-api:
     build:
       context: .
       dockerfile: Dockerfile
-      target: runtime
     container_name: aegis-risk-gateway
-    image: aegis-finance-api:latest
     ports:
       - "8000:8000"
-    volumes:
-      # Mount models directory so artifacts can be updated without rebuilding the image
-      - ./models:/aegis/models:ro
     environment:
-      - ENV=production
+      - ENV=local
       - LOG_LEVEL=info
+    volumes:
+      - ./models:/app/models          # mount model artifacts
+    # Uses healthcheck defined in Dockerfile
+    networks:
+      - aegis-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 15s
-    labels:
-      - "com.aegis.service=risk-gateway"
-      - "com.aegis.version=1.0.0"
+
+  # ── 2. Prometheus ──────────────────────────────────────────
+  # Scrapes /metrics from Aegis API every 15 seconds
+  # Stores time-series data for Grafana to query
+  prometheus:
+    image: prom/prometheus:v2.49.0
+    container_name: aegis-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+      - "--storage.tsdb.retention.time=7d"
+    depends_on:
+      - aegis-api
+    networks:
+      - aegis-network
+    restart: unless-stopped
+
+  # ── 3. Grafana ─────────────────────────────────────────────
+  # Pre-configured with Prometheus datasource + Aegis dashboard
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: aegis-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=aegis123
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/aegis_dashboard.json
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - aegis-network
+    restart: unless-stopped
+
+networks:
+  aegis-network:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

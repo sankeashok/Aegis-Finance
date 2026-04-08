@@ -9,6 +9,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from .schemas import LoanApplication, RiskResponse, RiskDriver
 from .transformers import SparseSentinelTransformer
+from .drift_monitor import (
+    record_prediction,
+    compute_full_drift_report,
+    get_window_size,
+    _prediction_window
+)
 
 # --- Lifecycle Management ---
 models = {}
@@ -54,9 +60,23 @@ Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 
 
+@app.get("/", tags=["Health"])
 @app.get("/health", tags=["Health"])
-async def health_check():
-    return {"status": "Online", "engine_version": "1.3.9"}
+def health_check():
+    """Enhanced health check with drift status."""
+    window_size = get_window_size()
+    
+    drift_status = "INSUFFICIENT_DATA"
+    if window_size >= 20:
+        report = compute_full_drift_report()
+        drift_status = report["status"]
+    
+    return {
+        "status": "Online",
+        "engine_version": "1.3.9",
+        "predictions_in_window": window_size,
+        "drift_status": drift_status
+    }
 
 def calculate_risk_drivers(data: dict) -> list:
     """
@@ -123,6 +143,9 @@ async def predict_risk(application: LoanApplication):
                 drivers=risk_drivers
             )
         else:
+            # ✅ Record for drift analysis
+            record_prediction(data_dict)
+
             return RiskResponse(
                 status="Safe",
                 probability=round(prob_default, 4),
@@ -134,9 +157,63 @@ async def predict_risk(application: LoanApplication):
         raise HTTPException(status_code=500, detail=f"Inference Failure: {str(e)}")
 
 
+# ── Drift Monitoring Endpoints ─────────────────────────────
+
+@app.get("/drift", tags=["Monitoring"])
+def get_drift_report():
+    """
+    Returns PSI-based drift analysis of recent prediction inputs.
+    
+    Compares the last N prediction feature distributions against
+    the training baseline to detect data drift.
+    """
+    return compute_full_drift_report()
+
+
+@app.get("/drift/status", tags=["Monitoring"])
+def get_drift_status():
+    """
+    Quick drift status check — lightweight version of /drift.
+    Returns only the overall PSI and status label.
+    """
+    window_size = get_window_size()
+    
+    if window_size < 20:
+        return {
+            "status": "INSUFFICIENT_DATA",
+            "predictions_in_window": window_size,
+            "minimum_required": 20,
+            "message": f"Need {20 - window_size} more predictions"
+        }
+    
+    report = compute_full_drift_report()
+    return {
+        "status":                 report["status"],
+        "overall_psi":            report["overall_psi"],
+        "retraining_recommended": report["retraining_recommended"],
+        "predictions_analyzed":   report["predictions_analyzed"],
+        "recommendation":         report["recommendation"],
+        "emoji":                  report["drift_emoji"]
+    }
+
+
+@app.delete("/drift/reset", tags=["Monitoring"])
+def reset_drift_window():
+    """
+    Clears the prediction window. 
+    Use after retraining to start fresh drift tracking.
+    """
+    _prediction_window.clear()
+    return {
+        "message": "Drift window cleared successfully",
+        "predictions_in_window": 0
+    }
+
+
 # --- Unified Static UI Hosting ---
 # Mount the compiled React frontend (must exist in frontend/dist at runtime)
-if os.path.exists("frontend/dist"):
+# Skip during tests to avoid shadowing API routes with the root mount
+if os.path.exists("frontend/dist") and "PYTEST_CURRENT_TEST" not in os.environ:
     app.mount("/", StaticFiles(directory="frontend/dist", html=True), name="static")
 
     # Catch-all for React Router navigation (returns index.html for all unnamed routes)

@@ -1,0 +1,26 @@
+# =============================================================
+#  Prometheus Configuration for Aegis-Finance
+#  Scrapes /metrics from FastAPI every 15 seconds
+# =============================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    project: "aegis-finance"
+    environment: "local"
+
+scrape_configs:
+
+  # ── Aegis-Finance ML API ─────────────────────────────────
+  - job_name: "aegis-finance-api"
+    static_configs:
+      - targets:
+          - "aegis-api:8000"        # service name in docker network
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # ── Prometheus self-monitoring ───────────────────────────
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
